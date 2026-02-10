@@ -12,8 +12,14 @@ router.get('/status', issueController.getIssueStatus);
 router.get('/:id', issueController.getIssueById);
 
 
-
 // POST route
 router.post('/', issueController.createIssue);
+
+// PUT route
+router.put('/:id', issueController.updateIssue);
+
+// DELETE route
+router.delete('/:id', issueController.deleteIssue);
+
 
 module.exports = router;

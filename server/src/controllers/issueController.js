@@ -178,3 +178,114 @@ exports.getIssueStatus = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// Update issue
+exports.updateIssue = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, status, priority, severity } = req.body;
+
+        // Check if issue exists
+        const [existing] = await pool.query('SELECT * FROM issues WHERE id = ?', [id]);
+
+        if (existing.length === 0) {
+            return res.status(404).json({ message: 'Issue not found' });
+        }
+
+        // Build update query dynamically
+        const updates = [];
+        const params = [];
+
+        if (title !== undefined) {
+            if (title.length < 3) {
+                return res.status(400).json({ message: 'Title must be at least 3 characters' });
+            }
+            updates.push('title = ?');
+            params.push(title);
+        }
+
+        if (description !== undefined) {
+            if (description.length < 10) {
+                return res.status(400).json({ message: 'Description must be at least 10 characters' });
+            }
+            updates.push('description = ?');
+            params.push(description);
+        }
+
+        if (status !== undefined) {
+            const validStatuses = ['open', 'in-progress', 'resolved', 'closed'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({ message: 'Invalid status' });
+            }
+            updates.push('status = ?');
+            params.push(status);
+        }
+
+        if (priority !== undefined) {
+            const validPriorities = ['low', 'medium', 'high', 'critical'];
+            if (!validPriorities.includes(priority)) {
+                return res.status(400).json({ message: 'Invalid priority' });
+            }
+            updates.push('priority = ?');
+            params.push(priority);
+        }
+
+        if (severity !== undefined) {
+            const validSeverities = ['minor', 'major', 'critical'];
+            if (!validSeverities.includes(severity)) {
+                return res.status(400).json({ message: 'Invalid severity' });
+            }
+            updates.push('severity = ?');
+            params.push(severity);
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ message: 'No fields to update' });
+        }
+
+        params.push(id);
+
+        await pool.query(
+            `UPDATE issues SET ${updates.join(', ')} WHERE id = ?`,
+            params
+        );
+
+        const [updatedIssue] = await pool.query(
+            `SELECT i.*, u.name as user_name, u.email as user_email 
+             FROM issues i 
+             LEFT JOIN users u ON i.user_id = u.id 
+             WHERE i.id = ?`,
+            [id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Issue updated successfully',
+            issue: updatedIssue[0]
+        });
+    } catch (error) {
+        console.error('Update issue error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Delete issue
+exports.deleteIssue = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [result] = await pool.query('DELETE FROM issues WHERE id = ?', [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Issue not found' });
+        }
+
+        res.json({
+            success: true,
+            message: 'Issue deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete issue error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
