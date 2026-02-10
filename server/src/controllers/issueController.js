@@ -155,3 +155,26 @@ exports.getIssueById = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// Get issue statistics (counts by status)
+exports.getIssueStatus = async (req, res) => {
+    try {
+        const [stats] = await pool.query(`
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) as open,
+                SUM(CASE WHEN status = 'in-progress' THEN 1 ELSE 0 END) as in_progress,
+                SUM(CASE WHEN status = 'resolved' THEN 1 ELSE 0 END) as resolved,
+                SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) as closed
+            FROM issues
+        `);
+
+        res.json({
+            success: true,
+            stats: stats[0]
+        });
+    } catch (error) {
+        console.error('Get stats error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
