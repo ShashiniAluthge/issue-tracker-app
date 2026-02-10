@@ -143,7 +143,7 @@ export const LoginPage: React.FC = () => {
                                 size="lg"
                                 fullWidth
                                 isLoading={loading || isSubmitting}
-                                className="bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                                className="bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
                             >
                                 {loading || isSubmitting ? 'Signing in...' : 'Sign In'}
                             </Button>
@@ -168,18 +168,6 @@ export const LoginPage: React.FC = () => {
                         </p>
                     </div>
                 </div>
-
-                {/* Footer Text */}
-                <p className="mt-8 text-center text-xs text-gray-500">
-                    By signing in, you agree to our{' '}
-                    <a href="#" className="text-blue-900 hover:underline">
-                        Terms of Service
-                    </a>{' '}
-                    and{' '}
-                    <a href="#" className="text-blue-900 hover:underline">
-                        Privacy Policy
-                    </a>
-                </p>
             </div>
         </div>
     );
