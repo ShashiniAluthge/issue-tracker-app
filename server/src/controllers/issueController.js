@@ -50,19 +50,75 @@ exports.createIssue = async (req, res) => {
     }
 };
 
-// Get all issues
+
+// Get all issues with filters, search, and pagination
 exports.getAllIssues = async (req, res) => {
     try {
-        const [issues] = await pool.query(`
+        const {
+            page = 1,
+            limit = 10,
+            status,
+            priority,
+            severity,
+            search
+        } = req.query;
+
+        const offset = (page - 1) * limit;
+
+        let query = `
             SELECT i.*, u.name as user_name, u.email as user_email 
             FROM issues i 
             LEFT JOIN users u ON i.user_id = u.id 
-            ORDER BY i.created_at DESC
-        `);
+            WHERE 1=1
+        `;
+
+        const params = [];
+
+        // Apply filters
+        if (status) {
+            query += ' AND i.status = ?';
+            params.push(status);
+        }
+
+        if (priority) {
+            query += ' AND i.priority = ?';
+            params.push(priority);
+        }
+
+        if (severity) {
+            query += ' AND i.severity = ?';
+            params.push(severity);
+        }
+
+        // Apply search (searches in title and description)
+        if (search) {
+            query += ' AND (i.title LIKE ? OR i.description LIKE ?)';
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        // Get total count for pagination
+        const countQuery = query.replace(
+            'SELECT i.*, u.name as user_name, u.email as user_email',
+            'SELECT COUNT(*) as total'
+        );
+        const [countResult] = await pool.query(countQuery, params);
+        const total = countResult[0].total;
+
+        // Add ordering and pagination
+        query += ' ORDER BY i.created_at DESC LIMIT ? OFFSET ?';
+        params.push(parseInt(limit), parseInt(offset));
+
+        const [issues] = await pool.query(query, params);
 
         res.json({
             success: true,
-            issues
+            issues,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
         });
     } catch (error) {
         console.error('Get issues error:', error);
