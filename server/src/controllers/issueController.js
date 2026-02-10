@@ -49,3 +49,23 @@ exports.createIssue = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// Get all issues
+exports.getAllIssues = async (req, res) => {
+    try {
+        const [issues] = await pool.query(`
+            SELECT i.*, u.name as user_name, u.email as user_email 
+            FROM issues i 
+            LEFT JOIN users u ON i.user_id = u.id 
+            ORDER BY i.created_at DESC
+        `);
+
+        res.json({
+            success: true,
+            issues
+        });
+    } catch (error) {
+        console.error('Get issues error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
