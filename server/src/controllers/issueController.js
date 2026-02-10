@@ -69,3 +69,33 @@ exports.getAllIssues = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+//get issue by id
+exports.getIssueById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [issues] = await pool.query(
+            `SELECT i.*, u.name as user_name, u.email as user_email 
+             FROM issues i 
+             LEFT JOIN users u ON i.user_id = u.id 
+             WHERE i.id = ?`,
+            [id]
+        );
+
+        if (issues.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Issue not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            issue: issues[0]
+        });
+    } catch (error) {
+        console.error('Get issue error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

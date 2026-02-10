@@ -8,6 +8,7 @@ router.use(authMiddleware);
 
 // GET routes
 router.get('/', issueController.getAllIssues);
+router.get('/:id', issueController.getIssueById);
 
 
 // POST route
