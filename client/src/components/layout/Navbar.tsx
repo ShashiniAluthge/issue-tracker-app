@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { MdLogout, MdMenu, MdClose } from 'react-icons/md';
+import { MdLogout, MdMenu } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
 
 interface NavbarProps {

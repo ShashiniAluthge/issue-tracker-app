@@ -3,6 +3,7 @@ import { useAuthStore } from './store/authStore';
 import LoginPage from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CreateIssuePage } from './pages/CreateIssuePage';
+import { AllIssuesPage } from './pages/AllIssuesPage';
 
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -33,6 +34,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/issues"
+          element={
+            <ProtectedRoute>
+              <AllIssuesPage />
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
