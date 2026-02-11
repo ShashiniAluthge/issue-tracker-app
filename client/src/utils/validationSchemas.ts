@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Login Schema
 export const loginSchema = z.object({
     email: z
         .string()
@@ -10,6 +11,7 @@ export const loginSchema = z.object({
         .min(6, 'Password must be at least 6 characters'),
 });
 
+// Register Schema
 export const registerSchema = z
     .object({
         name: z
@@ -30,5 +32,25 @@ export const registerSchema = z
         path: ['confirmPassword'],
     });
 
+// Create Issue Schema
+export const createIssueSchema = z.object({
+    title: z
+        .string()
+        .min(3, 'Title must be at least 3 characters')
+        .max(255, 'Title is too long'),
+    description: z
+        .string()
+        .min(10, 'Description must be at least 10 characters')
+        .max(5000, 'Description is too long'),
+    priority: z.enum(['low', 'medium', 'high', 'critical'], {
+        message: 'Please select a valid priority',
+    }),
+    severity: z.enum(['minor', 'major', 'critical'], {
+        message: 'Please select a valid severity',
+    }),
+});
+
+// Type exports
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type CreateIssueFormData = z.infer<typeof createIssueSchema>;

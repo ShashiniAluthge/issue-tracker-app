@@ -39,9 +39,9 @@ export const Sidebar: React.FC = () => {
     ];
 
     return (
-        <aside className="hidden md:flex md:flex-shrink-0">
+        <aside className="hidden md:flex md:shrink-0">
             <div className="flex flex-col w-64">
-                <div className="flex flex-col flex-grow bg-blue-900 overflow-y-auto">
+                <div className="flex flex-col grow bg-blue-900 overflow-y-auto">
                     {/* Logo */}
                     <div className="flex items-center justify-center h-16 px-4 bg-blue-950">
                         <div className="flex items-center space-x-2">
@@ -75,7 +75,7 @@ export const Sidebar: React.FC = () => {
                     {/* Footer */}
                     <div className="px-4 py-4 bg-blue-950">
                         <div className="text-xs text-blue-300 text-center">
-                            © 2024 Issue Tracker
+                            © 2026 Issue Tracker
                         </div>
                     </div>
                 </div>
