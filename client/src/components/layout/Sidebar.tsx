@@ -22,7 +22,7 @@ export const Sidebar: React.FC = () => {
         <aside className="hidden md:flex md:shrink-0">
             <div className="flex flex-col w-64 bg-white border-r border-gray-200">
                 {/* Logo */}
-                <div className="flex items-center h-16 px-6 border-b border-gray-200">
+                <div className="flex items-center h-16 px-6 ">
                     <div className="flex items-center space-x-3">
                         <div className="bg-blue-600 p-2 rounded-lg">
                             <MdBugReport className="text-white text-xl" />

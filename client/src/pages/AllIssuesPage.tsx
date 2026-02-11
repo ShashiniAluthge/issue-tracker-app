@@ -101,8 +101,6 @@ export const AllIssuesPage: React.FC = () => {
                     </div>
                 </div>
 
-
-
                 {/* Search and Filters */}
                 <SearchFilters
                     search={search}
@@ -155,7 +153,7 @@ export const AllIssuesPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Empty State - When no results after filtering */}
+                {/* no results after filtering */}
                 {!loading && issues.length === 0 && (search || status || priority) && (
                     <div className="mt-8 bg-white rounded-lg shadow-md p-12 text-center">
                         <svg

@@ -21,7 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     };
 
     return (
-        <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <nav className="bg-white  sticky top-0 z-10 border-b border-gray-200">
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Mobile Menu Button */}
@@ -34,35 +34,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                         </button>
                     </div>
 
-                    {/* Search Bar (Optional) */}
-                    <div className="flex-1 max-w-2xl mx-4">
-                        <div className="relative hidden md:block">
-                            <input
-                                type="text"
-                                placeholder="Search issues..."
-                                className="w-full px-4 py-2 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <svg
-                                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
-                        </div>
-                    </div>
+                    {/* Spacer for desktop */}
+                    <div className="hidden md:block"></div>
 
-                    {/* User Menu */}
-                    <div className="relative">
+                    {/* User Menu - Always on the right */}
+                    <div className="relative ml-auto">
                         <button
                             onClick={() => setShowUserMenu(!showUserMenu)}
-                            className="flex items-center space-x-3 focus:outline-none"
+                            className="flex items-center space-x-3 focus:outline-none cursor-pointer hover:opacity-80 transition-opacity"
                         >
                             <div className="hidden md:block text-right">
                                 <p className="text-sm font-medium text-gray-700">{user?.name}</p>
@@ -80,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                                 </div>
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2 cursor-pointer"
                                 >
                                     <MdLogout className="text-lg" />
                                     <span>Logout</span>

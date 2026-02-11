@@ -70,7 +70,7 @@ export const StatusCards: React.FC<StatusCardsProps> = ({ status, loading }) => 
                 return (
                     <div
                         key={index}
-                        className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 border border-gray-100"
+                        className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow p-4"
                     >
                         <div className="flex items-center justify-between">
                             <div>

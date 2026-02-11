@@ -1,14 +1,25 @@
 import React from 'react';
 import { type Issue } from '../../types/issue.types';
 import { formatDistanceToNow } from 'date-fns';
+import { MdOutlineVisibility } from 'react-icons/md';
+import { FaRegEdit } from 'react-icons/fa';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
 interface IssuesTableProps {
     issues: Issue[];
     loading: boolean;
     onViewIssue: (id: number) => void;
+    onEditIssue?: (id: number) => void;
+    onDeleteIssue?: (id: number) => void;
 }
 
-export const IssuesTable: React.FC<IssuesTableProps> = ({ issues, loading, onViewIssue }) => {
+export const IssuesTable: React.FC<IssuesTableProps> = ({
+    issues,
+    loading,
+    onViewIssue,
+    onEditIssue,
+    onDeleteIssue
+}) => {
     const getStatusBadge = (status: string) => {
         const statusStyles = {
             open: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -27,6 +38,12 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({ issues, loading, onVie
             critical: 'bg-red-100 text-red-800 border-red-300',
         };
         return priorityStyles[priority as keyof typeof priorityStyles] || priorityStyles.medium;
+    };
+
+    const handleDelete = (id: number, title: string) => {
+        if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
+            onDeleteIssue?.(id);
+        }
     };
 
     if (loading) {
@@ -131,12 +148,38 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({ issues, loading, onVie
                                     {formatDistanceToNow(new Date(issue.created_at), { addSuffix: true })}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button
-                                        onClick={() => onViewIssue(issue.id)}
-                                        className="text-blue-600 hover:text-blue-900 transition-colors"
-                                    >
-                                        View
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        {/* View Icon */}
+                                        <button
+                                            onClick={() => onViewIssue(issue.id)}
+                                            className="text-gray-500 hover:text-gray-900 transition-colors p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                            title="View issue"
+                                        >
+                                            <MdOutlineVisibility className="text-base" />
+                                        </button>
+
+                                        {/* Edit Icon */}
+                                        {onEditIssue && (
+                                            <button
+                                                onClick={() => onEditIssue(issue.id)}
+                                                className="text-gray-500 hover:text-gray-900 transition-colors p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                                title="Edit issue"
+                                            >
+                                                <FaRegEdit className="text-sm" />
+                                            </button>
+                                        )}
+
+                                        {/* Delete Icon */}
+                                        {onDeleteIssue && (
+                                            <button
+                                                onClick={() => handleDelete(issue.id, issue.title)}
+                                                className="text-red-400 hover:text-red-600 transition-colors p-1 hover:bg-red-50 rounded cursor-pointer"
+                                                title="Delete issue"
+                                            >
+                                                <RiDeleteBin6Line className="text-sm" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}
