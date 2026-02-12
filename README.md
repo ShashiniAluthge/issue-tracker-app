@@ -1,4 +1,4 @@
-# Issue Tracker Web Application
+# Issue Tracker Web Application - FixFlow
 
 A full-stack Issue Tracker system built to manage software issues with complete CRUD operations, authentication, filtering, and data export functionality. Designed with strong focus on UI/UX, reusable components, and scalable architecture.
 
