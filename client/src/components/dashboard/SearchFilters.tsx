@@ -33,7 +33,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                             value={search}
                             onChange={(e) => onSearchChange(e.target.value)}
                             placeholder="Search by title..."
-                            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg  focus:border-transparent"
+                            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg  focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                         />
                         <svg
                             className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -57,7 +57,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                     <select
                         value={status}
                         onChange={(e) => onStatusChange(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500  focus:outline-none cursor-pointer"
                     >
                         <option value="">All Statuses</option>
                         <option value="open">Open</option>
@@ -73,7 +73,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                     <select
                         value={priority}
                         onChange={(e) => onPriorityChange(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500  focus:outline-none cursor-pointer"
                     >
                         <option value="">All Priorities</option>
                         <option value="low">Low</option>

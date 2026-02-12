@@ -8,8 +8,6 @@ import { Button } from '../components/common/Button';
 import { Pagination } from '../components/common/Pagination';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { Alert } from '../components/common/Alert';
-import { exportToCSV } from '../utils/exportCsv';
-import { printIssues } from '../utils/printIssues';
 import { useAllIssues } from '../hooks/useAllIssues';
 
 export const AllIssuesPage: React.FC = () => {
@@ -21,6 +19,7 @@ export const AllIssuesPage: React.FC = () => {
         totalPages,
         totalIssues,
         currentPage,
+        isPrinting,
 
         // Filters
         search,
@@ -46,9 +45,13 @@ export const AllIssuesPage: React.FC = () => {
 
         // Actions
         refreshIssues,
+        handlePrint,
+        handleExportCSV
     } = useAllIssues(10);
 
     const itemsPerPage = 10;
+
+
 
     return (
         <Layout>
@@ -57,13 +60,13 @@ export const AllIssuesPage: React.FC = () => {
                 <div className="mb-8">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">All Issues</h1>
+                            <h1 className="text-3xl font-semibold text-gray-900">All Issues</h1>
                         </div>
                         <div className="flex gap-3">
                             <Button
                                 onClick={refreshIssues}
                                 variant="outline"
-                                size="md"
+                                size="sm"
                                 className="border-gray-300 text-gray-700 cursor-pointer"
                             >
                                 <MdRefresh className="mr-2 text-lg" />
@@ -72,7 +75,7 @@ export const AllIssuesPage: React.FC = () => {
                             <Button
                                 onClick={() => navigate('/issues/create')}
                                 variant="primary"
-                                size="md"
+                                size="sm"
                                 className="cursor-pointer"
                             >
                                 <MdAdd className="mr-2 text-lg" />
@@ -112,8 +115,8 @@ export const AllIssuesPage: React.FC = () => {
                     {/* Export Actions */}
                     <div className="flex gap-2">
                         <button
-                            onClick={() => exportToCSV(issues, `issues_${new Date().toISOString()}.csv`)}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer flex items-center"
+                            onClick={handleExportCSV}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={issues.length === 0}
                         >
                             <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,14 +125,26 @@ export const AllIssuesPage: React.FC = () => {
                             Export CSV
                         </button>
                         <button
-                            onClick={() => printIssues(issues, { search, status, priority })}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer flex items-center"
-                            disabled={issues.length === 0}
+                            onClick={handlePrint}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={issues.length === 0 || isPrinting}
                         >
-                            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                            </svg>
-                            Print
+                            {isPrinting ? (
+                                <>
+                                    <svg className="animate-spin h-4 w-4 mr-1.5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Loading...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    Print
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>

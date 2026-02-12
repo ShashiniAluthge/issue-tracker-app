@@ -138,13 +138,12 @@ export const printIssues = (
                 }
                 
                 .summary {
-                    background-color: #EFF6FF;
+                    background-color: #FFFFFF;
                     padding: 16px;
                     border-radius: 8px;
                     margin-bottom: 24px;
-                    border-left: 4px solid #1E40AF;
                 }
-                
+
                 .summary h2 {
                     font-size: 18px;
                     color: #1E40AF;

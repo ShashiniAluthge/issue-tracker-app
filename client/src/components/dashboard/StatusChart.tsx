@@ -37,18 +37,17 @@ export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
 
     return (
         <div className="bg-white rounded-lg p-4 h-full flex flex-col  border border-gray-200">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">Status Distribution</h3>
+            <h3 className="text-base font-semibold text-gray-900 ">Status Distribution</h3>
             <div className="flex-1 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                         <Pie
                             data={data}
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-                            label={({ name, percent }: { name: string, percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={75}
-                            fill="#8884d8"
+
+                            outerRadius="100%"
                             dataKey="value"
                         >
                             {data.map((entry, index) => (
@@ -57,12 +56,19 @@ export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
                         </Pie>
                         <Tooltip />
                         <Legend
-                            wrapperStyle={{ fontSize: '12px' }}
-                            verticalAlign="bottom"
-                            height={36}
+                            layout="vertical"
+                            align="right"
+                            verticalAlign="middle"
+                            wrapperStyle={{
+                                right: "15%",
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                lineHeight: '44px',
+                            }}
                         />
                     </PieChart>
                 </ResponsiveContainer>
+
             </div>
         </div>
     );

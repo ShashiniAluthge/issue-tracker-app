@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { issueService } from '../services/issueService';
 import { type Issue } from '../types/issue.types';
+import { printIssues } from '../utils/printIssues';
+import { exportToCSV } from '../utils/exportCsv';
+
 
 interface DeleteDialogState {
     isOpen: boolean;
@@ -14,6 +17,7 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
     const [loading, setLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
     const [deleting, setDeleting] = useState(false); // Add deleting state
+    const [isPrinting, setIsPrinting] = useState(false);
 
     // Pagination & Filter State
     const [search, setSearch] = useState('');
@@ -109,6 +113,45 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
         }
     };
 
+    // Fetch all issues for printing/export
+    const fetchAllForPrint = async () => {
+        try {
+            const filters = {
+                search: search || undefined,
+                status: status || undefined,
+                priority: priority || undefined,
+                page: 1,
+                limit: totalIssues || 1000,
+            };
+
+            const response = await issueService.getAllIssues(filters);
+            return response.issues;
+        } catch (error) {
+            console.error('Error fetching all issues for print:', error);
+            return [];
+        }
+    };
+
+    // Handle print with loading state
+    const handlePrint = async () => {
+        setIsPrinting(true);
+        try {
+            const allIssues = await fetchAllForPrint();
+            printIssues(allIssues, { search, status, priority });
+        } catch (error) {
+            console.error('Print failed:', error);
+            alert('Failed to load issues for printing');
+        } finally {
+            setIsPrinting(false);
+        }
+    };
+
+    //handle export to CSV
+    const handleExportCSV = async () => {
+        const allIssues = await fetchAllForPrint();
+        exportToCSV(allIssues, `issues_${new Date().toISOString()}.csv`);
+    };
+
     // Clear all filters
     const clearFilters = () => {
         setSearch('');
@@ -130,7 +173,8 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
         totalPages,
         totalIssues,
         currentPage,
-        deleting, // Return deleting state
+        deleting,
+        isPrinting,
 
         // Filters
         search,
@@ -149,6 +193,10 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
         openDeleteDialog,
         closeDeleteDialog,
         confirmDelete,
+
+        //print & export
+        handlePrint,
+        handleExportCSV,
 
         // Messages
         successMessage,
