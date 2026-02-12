@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { type IssueStatus } from '../../types/issue.types';
 
@@ -8,6 +8,18 @@ interface StatusChartProps {
 }
 
 export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+        };
+
+        handleResize(); // set initial value
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     if (loading) {
         return (
             <div className="bg-white rounded-lg shadow-md p-4 animate-pulse">
@@ -36,8 +48,8 @@ export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg p-4 h-full flex flex-col  border border-gray-200">
-            <h3 className="text-base font-semibold text-gray-900 ">Status Distribution</h3>
+        <div className="bg-white rounded-lg p-4 h-full flex flex-col border border-gray-200">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">Status Distribution</h3>
             <div className="flex-1 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
@@ -46,7 +58,6 @@ export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-
                             outerRadius="100%"
                             dataKey="value"
                         >
@@ -56,19 +67,17 @@ export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
                         </Pie>
                         <Tooltip />
                         <Legend
-                            layout="vertical"
-                            align="right"
-                            verticalAlign="middle"
-                            wrapperStyle={{
-                                right: "15%",
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                lineHeight: '44px',
-                            }}
+                            layout={isMobile ? 'horizontal' : 'vertical'}
+                            align={isMobile ? 'center' : 'right'}
+                            verticalAlign={isMobile ? 'bottom' : 'middle'}
+                            wrapperStyle={
+                                isMobile
+                                    ? { marginTop: 10, lineHeight: '24px' }
+                                    : { right: '15%', top: '50%', transform: 'translateY(-50%)', lineHeight: '44px' }
+                            }
                         />
                     </PieChart>
                 </ResponsiveContainer>
-
             </div>
         </div>
     );
