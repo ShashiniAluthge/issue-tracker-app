@@ -1,0 +1,84 @@
+import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { type IssueStatus } from '../../types/issue.types';
+
+interface StatusChartProps {
+    stats: IssueStatus | null;
+    loading: boolean;
+}
+
+export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+        };
+
+        handleResize(); // set initial value
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="bg-white rounded-lg shadow-md p-4 animate-pulse">
+                <div className="h-5 bg-gray-200 rounded w-1/3 mb-3"></div>
+                <div className="h-48 bg-gray-100 rounded"></div>
+            </div>
+        );
+    }
+
+    const data = [
+        { name: 'Open', value: Number(stats?.open) || 0, color: '#F59E0B' },
+        { name: 'In Progress', value: Number(stats?.in_progress) || 0, color: '#8B5CF6' },
+        { name: 'Resolved', value: Number(stats?.resolved) || 0, color: '#10B981' },
+        { name: 'Closed', value: Number(stats?.closed) || 0, color: '#6B7280' },
+    ].filter(item => item.value > 0);
+
+    if (data.length === 0) {
+        return (
+            <div className="bg-white rounded-lg shadow-md p-4">
+                <h3 className="text-base font-semibold text-gray-900 mb-3">Status Distribution</h3>
+                <div className="flex items-center justify-center h-48 text-gray-400">
+                    <p className="text-sm">No issues to display</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white rounded-lg p-4 h-full flex flex-col border border-gray-200">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">Status Distribution</h3>
+            <div className="flex-1 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius="100%"
+                            dataKey="value"
+                        >
+                            {data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend
+                            layout={isMobile ? 'horizontal' : 'vertical'}
+                            align={isMobile ? 'center' : 'right'}
+                            verticalAlign={isMobile ? 'bottom' : 'middle'}
+                            wrapperStyle={
+                                isMobile
+                                    ? { marginTop: 10, lineHeight: '24px' }
+                                    : { right: '15%', top: '50%', transform: 'translateY(-50%)', lineHeight: '44px' }
+                            }
+                        />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+};
