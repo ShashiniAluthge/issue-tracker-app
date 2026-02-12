@@ -176,8 +176,7 @@ export const AllIssuesPage: React.FC = () => {
                         </p>
                     </div>
 
-                    {/* Export/Actions Menu */}
-                    /* Export/Actions Menu */
+                    {/* Actions Menu */}
                     <div className="flex gap-2">
                         <button
                             onClick={() => exportToCSV(issues, `issues_${new Date().toISOString()}.csv`)}
@@ -222,7 +221,7 @@ export const AllIssuesPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Issues Table with Edit and Delete */}
+                {/* Issues Table*/}
                 <IssuesTable
                     issues={issues}
                     loading={loading}

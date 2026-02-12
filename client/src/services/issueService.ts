@@ -21,7 +21,7 @@ export const issueService = {
     getIssueStats: async (): Promise<{ success: boolean; stats: IssueStatus }> => {
         const response = await API.get('/issues/status');
 
-        // ✅ Convert strings to numbers for consistency
+        // Convert strings to numbers for consistency
         const transformedStats: IssueStatus = {
             total: Number(response.data.stats.total) || 0,
             open: Number(response.data.stats.open) || 0,

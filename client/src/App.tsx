@@ -6,6 +6,8 @@ import { CreateIssuePage } from './pages/CreateIssuePage';
 import { AllIssuesPage } from './pages/AllIssuesPage';
 import { IssueDetailPage } from './pages/IssueDetailPage';
 import { EditIssuePage } from './pages/EditIssuePage';
+import RegisterPage from './pages/RegisterPage';
+
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
@@ -17,6 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         <Route
           path="/dashboard"

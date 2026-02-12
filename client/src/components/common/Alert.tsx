@@ -4,8 +4,8 @@ interface AlertProps {
     type: 'success' | 'error' | 'warning' | 'info';
     message: string;
     onClose?: () => void;
-    isToast?: boolean; // Add this for toast positioning
-    duration?: number; // Auto-close duration
+    isToast?: boolean;
+    duration?: number;
 }
 
 export const Alert: React.FC<AlertProps> = ({

@@ -14,10 +14,10 @@ export interface Issue {
 
 export interface IssueStatus {
     total: number;
-    open: number | string;  // ✅ Allow string from API
-    in_progress: number | string;  // ✅ Use underscore, allow string
-    resolved: number | string;  // ✅ Allow string from API
-    closed: number | string;  // ✅ Allow string from API
+    open: number | string;
+    in_progress: number | string;
+    resolved: number | string;
+    closed: number | string;
 }
 
 export interface IssueFilters {
