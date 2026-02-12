@@ -50,7 +50,27 @@ export const createIssueSchema = z.object({
     }),
 });
 
+// Edit Issue Schema (includes status field)
+export const editIssueSchema = z.object({
+    title: z
+        .string()
+        .min(3, 'Title must be at least 3 characters')
+        .max(255, 'Title is too long'),
+    description: z
+        .string()
+        .min(10, 'Description must be at least 10 characters')
+        .max(5000, 'Description is too long'),
+    status: z.enum(['open', 'in-progress', 'resolved', 'closed']),
+    priority: z.enum(['low', 'medium', 'high', 'critical'], {
+        message: 'Please select a valid priority',
+    }),
+    severity: z.enum(['minor', 'major', 'critical'], {
+        message: 'Please select a valid severity',
+    }),
+});
+
 // Type exports
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type CreateIssueFormData = z.infer<typeof createIssueSchema>;
+export type EditIssueFormData = z.infer<typeof editIssueSchema>;

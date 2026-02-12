@@ -53,6 +53,26 @@ export const AllIssuesPage: React.FC = () => {
         navigate(`/issues/${id}`);
     };
 
+    const handleEditIssue = (id: number) => {
+        navigate(`/issues/${id}/edit`);
+    };
+
+    const handleDeleteIssue = async (id: number) => {
+        if (!window.confirm('Are you sure you want to delete this issue? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await issueService.deleteIssue(id);
+            // Refresh the list after deletion
+            fetchIssues();
+            alert('Issue deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting issue:', error);
+            alert('Failed to delete issue. Please try again.');
+        }
+    };
+
     const handleClearFilters = () => {
         setSearch('');
         setStatus('');
@@ -62,10 +82,8 @@ export const AllIssuesPage: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        // Scroll to top of page
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
 
     return (
         <Layout>
@@ -75,16 +93,13 @@ export const AllIssuesPage: React.FC = () => {
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">All Issues</h1>
-                            <p className="text-gray-600 mt-2">
-                                Manage and track all issues in your system
-                            </p>
                         </div>
                         <div className="flex gap-3">
                             <Button
                                 onClick={fetchIssues}
                                 variant="outline"
                                 size="md"
-                                className="border-gray-300 text-gray-700"
+                                className="border-gray-300 text-gray-700 cursor-pointer"
                             >
                                 <MdRefresh className="mr-2 text-lg" />
                                 Refresh
@@ -93,6 +108,7 @@ export const AllIssuesPage: React.FC = () => {
                                 onClick={() => navigate('/issues/create')}
                                 variant="primary"
                                 size="md"
+                                className='cursor-pointer'
                             >
                                 <MdAdd className="mr-2 text-lg" />
                                 New Issue
@@ -130,17 +146,23 @@ export const AllIssuesPage: React.FC = () => {
 
                     {/* Export/Actions Menu */}
                     <div className="flex gap-2">
-                        <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                             Export CSV
                         </button>
-                        <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                             Print
                         </button>
                     </div>
                 </div>
 
-                {/* Issues Table */}
-                <IssuesTable issues={issues} loading={loading} onViewIssue={handleViewIssue} />
+                {/* Issues Table with Edit and Delete */}
+                <IssuesTable
+                    issues={issues}
+                    loading={loading}
+                    onViewIssue={handleViewIssue}
+                    onEditIssue={handleEditIssue}
+                    onDeleteIssue={handleDeleteIssue}
+                />
 
                 {/* Pagination */}
                 {!loading && totalPages > 1 && (
@@ -153,7 +175,7 @@ export const AllIssuesPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* no results after filtering */}
+                {/* No results after filtering */}
                 {!loading && issues.length === 0 && (search || status || priority) && (
                     <div className="mt-8 bg-white rounded-lg shadow-md p-12 text-center">
                         <svg

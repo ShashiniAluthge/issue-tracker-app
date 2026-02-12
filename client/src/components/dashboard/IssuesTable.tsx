@@ -81,6 +81,11 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
         );
     }
 
+    const truncateText = (text: string, maxLength: number = 100) => {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
@@ -111,12 +116,12 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
                         {issues.map((issue) => (
                             <tr key={issue.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4">
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-medium text-gray-900">
+                                    <div className="flex flex-col" style={{ maxWidth: '300px' }}>
+                                        <span className="text-sm font-medium text-gray-900 truncate" title={issue.title}>
                                             {issue.title}
                                         </span>
-                                        <span className="text-sm text-gray-500 truncate max-w-md">
-                                            {issue.description}
+                                        <span className="text-sm text-gray-500 truncate" title={issue.description}>
+                                            {truncateText(issue.description, 100)}
                                         </span>
                                     </div>
                                 </td>
