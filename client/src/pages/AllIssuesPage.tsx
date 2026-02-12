@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { IssuesTable } from '../components/dashboard/IssuesTable';
 import { SearchFilters } from '../components/dashboard/SearchFilters';
-import { issueService } from '../services/issueService';
-import { type Issue } from '../types/issue.types';
 import { MdAdd, MdRefresh } from 'react-icons/md';
 import { Button } from '../components/common/Button';
 import { Pagination } from '../components/common/Pagination';
@@ -12,110 +10,45 @@ import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { Alert } from '../components/common/Alert';
 import { exportToCSV } from '../utils/exportCsv';
 import { printIssues } from '../utils/printIssues';
+import { useAllIssues } from '../hooks/useAllIssues';
 
 export const AllIssuesPage: React.FC = () => {
     const navigate = useNavigate();
-    const [issues, setIssues] = useState<Issue[]>([]);
-    const [loading, setLoading] = useState(true);
+    const {
+        // Data
+        issues,
+        loading,
+        totalPages,
+        totalIssues,
+        currentPage,
 
-    // Filters and Pagination
-    const [search, setSearch] = useState('');
-    const [status, setStatus] = useState('');
-    const [priority, setPriority] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalIssues, setTotalIssues] = useState(0);
-    const [successMessage, setSuccessMessage] = useState('');
+        // Filters
+        search,
+        status,
+        priority,
+        setSearch,
+        setStatus,
+        setPriority,
+        clearFilters,
+
+        // Pagination
+        handlePageChange,
+
+        // Delete Dialog
+        deleteDialog,
+        openDeleteDialog,
+        closeDeleteDialog,
+        confirmDelete,
+
+        // Messages
+        successMessage,
+        clearSuccess,
+
+        // Actions
+        refreshIssues,
+    } = useAllIssues(10);
+
     const itemsPerPage = 10;
-
-    // Delete dialog state
-    const [deleteDialog, setDeleteDialog] = useState<{
-        isOpen: boolean;
-        issueId: number | null;
-        issueTitle: string;
-    }>({
-        isOpen: false,
-        issueId: null,
-        issueTitle: '',
-    });
-
-    // Fetch issues with pagination and filters
-    const fetchIssues = async () => {
-        setLoading(true);
-        try {
-            const filters = {
-                search: search || undefined,
-                status: status || undefined,
-                priority: priority || undefined,
-                page: currentPage,
-                limit: itemsPerPage,
-            };
-            const response = await issueService.getAllIssues(filters);
-            setIssues(response.issues);
-            setTotalPages(response.pagination.totalPages);
-            setTotalIssues(response.pagination.total);
-        } catch (error) {
-            console.error('Error fetching issues:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchIssues();
-    }, [search, status, priority, currentPage]);
-
-    const handleViewIssue = (id: number) => {
-        navigate(`/issues/${id}`);
-    };
-
-    const handleEditIssue = (id: number) => {
-        navigate(`/issues/${id}/edit`);
-    };
-
-    const handleDeleteIssue = (id: number) => {
-        const issue = issues.find((i) => i.id === id);
-
-        setDeleteDialog({
-            isOpen: true,
-            issueId: id,
-            issueTitle: issue?.title || 'this issue',
-        });
-    };
-
-    const confirmDelete = async () => {
-        if (!deleteDialog.issueId) return;
-
-        const issueTitle = deleteDialog.issueTitle;
-
-        await issueService.deleteIssue(deleteDialog.issueId);
-        setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' });
-
-        await fetchIssues();
-
-        setSuccessMessage(`Issue "${issueTitle}" deleted successfully!`);
-    };
-
-    const handleClearFilters = () => {
-        setSearch('');
-        setStatus('');
-        setPriority('');
-        setCurrentPage(1);
-    };
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // Handle print
-    const handlePrint = () => {
-        printIssues(issues, {
-            search: search || undefined,
-            status: status || undefined,
-            priority: priority || undefined,
-        });
-    };
 
     return (
         <Layout>
@@ -128,7 +61,7 @@ export const AllIssuesPage: React.FC = () => {
                         </div>
                         <div className="flex gap-3">
                             <Button
-                                onClick={fetchIssues}
+                                onClick={refreshIssues}
                                 variant="outline"
                                 size="md"
                                 className="border-gray-300 text-gray-700 cursor-pointer"
@@ -157,7 +90,7 @@ export const AllIssuesPage: React.FC = () => {
                     onSearchChange={setSearch}
                     onStatusChange={setStatus}
                     onPriorityChange={setPriority}
-                    onClearFilters={handleClearFilters}
+                    onClearFilters={clearFilters}
                 />
 
                 {/* Issues Section Header */}
@@ -176,58 +109,41 @@ export const AllIssuesPage: React.FC = () => {
                         </p>
                     </div>
 
-                    {/* Actions Menu */}
+                    {/* Export Actions */}
                     <div className="flex gap-2">
                         <button
                             onClick={() => exportToCSV(issues, `issues_${new Date().toISOString()}.csv`)}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer flex items-center"
                             disabled={issues.length === 0}
                         >
-                            <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                />
+                            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             Export CSV
                         </button>
                         <button
-                            onClick={handlePrint}
+                            onClick={() => printIssues(issues, { search, status, priority })}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer flex items-center"
                             disabled={issues.length === 0}
                         >
-                            <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                                />
+                            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                             </svg>
                             Print
                         </button>
                     </div>
                 </div>
 
-                {/* Issues Table*/}
+                {/* Issues Table */}
                 <IssuesTable
                     issues={issues}
                     loading={loading}
-                    onViewIssue={handleViewIssue}
-                    onEditIssue={handleEditIssue}
-                    onDeleteIssue={handleDeleteIssue}
+                    onViewIssue={(id) => navigate(`/issues/${id}`)}
+                    onEditIssue={(id) => navigate(`/issues/${id}/edit`)}
+                    onDeleteIssue={(id) => {
+                        const issue = issues.find((i) => i.id === id);
+                        openDeleteDialog(id, issue?.title || 'this issue');
+                    }}
                 />
 
                 {/* Pagination */}
@@ -241,52 +157,38 @@ export const AllIssuesPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* No results after filtering */}
+                {/* No Results */}
                 {!loading && issues.length === 0 && (search || status || priority) && (
                     <div className="mt-8 bg-white rounded-lg shadow-md p-12 text-center">
-                        <svg
-                            className="mx-auto h-16 w-16 text-gray-400 mb-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
+                        <svg className="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            No issues found matching your filters
-                        </h3>
-                        <p className="text-gray-500 mb-4">
-                            Try adjusting your search criteria or clearing the filters
-                        </p>
-                        <Button onClick={handleClearFilters} variant="outline" size="md">
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No issues found matching your filters</h3>
+                        <p className="text-gray-500 mb-4">Try adjusting your search criteria or clearing the filters</p>
+                        <Button onClick={clearFilters} variant="outline" size="md">
                             Clear All Filters
                         </Button>
                     </div>
                 )}
             </div>
 
-            {/* Confirm Delete Dialog */}
+            {/* Confirm Delete Dialog - MATCHING OLD WORKING VERSION */}
             <ConfirmDialog
                 isOpen={deleteDialog.isOpen}
                 title="Deleting Issue"
                 message={`Deleting "${deleteDialog.issueTitle}"...`}
                 onConfirm={confirmDelete}
-                onCancel={() => setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' })}
+                onCancel={closeDeleteDialog}
                 type="danger"
                 autoConfirm={true}
             />
 
-            {/* Success Alert Toast */}
+            {/* Success Alert */}
             {successMessage && (
                 <Alert
                     type="success"
                     message={successMessage}
-                    onClose={() => setSuccessMessage('')}
+                    onClose={clearSuccess}
                     isToast={true}
                     duration={3000}
                 />

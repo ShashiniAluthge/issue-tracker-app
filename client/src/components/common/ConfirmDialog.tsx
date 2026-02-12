@@ -148,7 +148,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                             onClick={handleCancel}
                             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
                         >
-                            <MdClose className="text-xl" />
+                            <MdClose className="text-xl cursor-pointer" />
                         </button>
                     )}
 

@@ -60,9 +60,9 @@ export const IssueForm: React.FC<IssueFormProps> = ({
                 )}
             </div>
 
-            {/* Status, Priority, Severity Row (Edit Mode)*/}
+            {/* Status, Priority, Severity*/}
             <div className={`grid grid-cols-1 ${isEditMode ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-6`}>
-                {/* Status - Only in Edit Mode */}
+                {/* Status*/}
                 {isEditMode && (
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -140,9 +140,9 @@ export const IssueForm: React.FC<IssueFormProps> = ({
                 <Button
                     type="submit"
                     variant="primary"
-                    size="lg"
+                    size="sm"
                     isLoading={loading}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                 >
                     <MdSave className="mr-2 text-lg" />
                     {loading
@@ -156,10 +156,10 @@ export const IssueForm: React.FC<IssueFormProps> = ({
                 <Button
                     type="button"
                     variant="outline"
-                    size="lg"
+                    size="sm"
                     onClick={onCancel}
                     disabled={loading}
-                    className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer"
                 >
                     Cancel
                 </Button>

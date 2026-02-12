@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { issueService } from '../services/issueService';
-import { type Issue } from '../types/issue.types';
 import { MdArrowBack } from 'react-icons/md';
 import { Button } from '../components/common/Button';
 import { formatDistanceToNow } from 'date-fns';
@@ -9,82 +7,23 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 import { FaRegEdit } from 'react-icons/fa';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { Alert } from '../components/common/Alert';
+import { useIssueDetail } from '../hooks/useIssueDetail';
 
 export const IssueDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [issue, setIssue] = useState<Issue | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
-    // Delete dialog state
-    const [deleteDialog, setDeleteDialog] = useState<{
-        isOpen: boolean;
-        issueId: number | null;
-        issueTitle: string;
-    }>({
-        isOpen: false,
-        issueId: null,
-        issueTitle: '',
-    });
-    useEffect(() => {
-        const fetchIssue = async () => {
-            if (!id) return;
 
-            setLoading(true);
-            setError(null);
-
-            try {
-                const response = await issueService.getIssueById(parseInt(id));
-                setIssue(response.issue);
-            } catch (err: any) {
-                setError(err.response?.data?.message || 'Failed to load issue');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchIssue();
-    }, [id]);
-
-    const handleDelete = () => {
-        if (!issue) return;
-
-        setDeleteDialog({
-            isOpen: true,
-            issueId: issue.id,
-            issueTitle: issue.title,
-        });
-    };
-    const confirmDelete = async () => {
-        if (!deleteDialog.issueId) return;
-
-        const issueTitle = deleteDialog.issueTitle;
-
-        try {
-            await issueService.deleteIssue(deleteDialog.issueId);
-
-            // Close dialog
-            setDeleteDialog({
-                isOpen: false,
-                issueId: null,
-                issueTitle: '',
-            });
-
-            setSuccessMessage(
-                `Issue "${issueTitle}" deleted successfully!`
-            );
-
-            setTimeout(() => {
-                navigate(-1);//go back
-            }, 1500);
-
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-
+    const {
+        issue,
+        loading,
+        error,
+        successMessage,
+        deleteDialog,
+        openDeleteDialog,
+        closeDeleteDialog,
+        confirmDelete,
+        clearSuccess,
+    } = useIssueDetail(parseInt(id || '0'));
 
     const getStatusBadge = (status: string) => {
         const styles = {
@@ -146,7 +85,7 @@ export const IssueDetailPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className=" px-4 sm:px-6 lg:px-8 py-8">
+            <div className="px-4 sm:px-6 lg:px-8 py-8">
                 {/* Back Button */}
                 <div className="mb-6">
                     <button
@@ -154,12 +93,11 @@ export const IssueDetailPage: React.FC = () => {
                         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group cursor-pointer"
                     >
                         <MdArrowBack className="text-xl group-hover:-translate-x-1 transition-transform" />
-
                     </button>
                 </div>
 
                 {/* Header Section */}
-                <div className="bg-white rounded-lg  border border-gray-200 mb-6">
+                <div className="bg-white rounded-lg border border-gray-200 mb-6">
                     <div className="p-6">
                         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
                             <div className="flex-1">
@@ -193,10 +131,10 @@ export const IssueDetailPage: React.FC = () => {
                                     Edit
                                 </Button>
                                 <Button
-                                    onClick={handleDelete}
+                                    onClick={openDeleteDialog}
                                     variant="danger"
                                     size="md"
-                                    className='cursor-pointer'
+                                    className="cursor-pointer"
                                 >
                                     <RiDeleteBin6Line className="text-lg mr-2" />
                                     Delete
@@ -231,7 +169,7 @@ export const IssueDetailPage: React.FC = () => {
                 </div>
 
                 {/* Description Section */}
-                <div className="bg-white rounded-lg  border border-gray-200 mb-6">
+                <div className="bg-white rounded-lg border border-gray-200 mb-6">
                     <div className="p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +184,7 @@ export const IssueDetailPage: React.FC = () => {
                 </div>
 
                 {/* Metadata Section */}
-                <div className="bg-white rounded-lg  border border-gray-200">
+                <div className="bg-white rounded-lg border border-gray-200">
                     <div className="p-6">
                         <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
                             <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,28 +225,27 @@ export const IssueDetailPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Confirm Delete Dialog */}
             <ConfirmDialog
                 isOpen={deleteDialog.isOpen}
                 title="Delete Issue"
                 message={`Are you sure you want to delete "${deleteDialog.issueTitle}"?`}
                 onConfirm={confirmDelete}
-                onCancel={() =>
-                    setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' })
-                }
+                onCancel={closeDeleteDialog}
                 type="danger"
             />
 
+            {/* Success Alert */}
             {successMessage && (
                 <Alert
                     type="success"
                     message={successMessage}
-                    onClose={() => setSuccessMessage('')}
+                    onClose={clearSuccess}
                     isToast={true}
                     duration={3000}
                 />
             )}
-
-
         </div>
     );
 };

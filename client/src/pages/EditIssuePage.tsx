@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLayout } from '../components/layout/FormLayout';
 import { editIssueSchema, type EditIssueFormData } from '../utils/validationSchemas';
-import { issueService } from '../services/issueService';
 import { IssueForm } from '../components/issues/IssueForm';
-
+import { useIssueController } from '../hooks/useIssueController';
 export const EditIssuePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [fetchLoading, setFetchLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const { issue, updateIssue, fetchIssue, loading, fetchLoading, error, successMessage } =
+        useIssueController();
 
     const {
         register,
@@ -25,49 +22,30 @@ export const EditIssuePage: React.FC = () => {
     });
 
     useEffect(() => {
-        const fetchIssue = async () => {
-            if (!id) return;
+        if (id) {
+            fetchIssue(parseInt(id));
+        }
+    }, [id]);
 
-            setFetchLoading(true);
-            try {
-                const response = await issueService.getIssueById(parseInt(id));
-                reset({
-                    title: response.issue.title,
-                    description: response.issue.description,
-                    status: response.issue.status,
-                    priority: response.issue.priority,
-                    severity: response.issue.severity,
-                });
-            } catch (err: any) {
-                setError(err.response?.data?.message || 'Failed to load issue');
-            } finally {
-                setFetchLoading(false);
-            }
-        };
-
-        fetchIssue();
-    }, [id, reset]);
+    useEffect(() => {
+        if (issue) {
+            reset({
+                title: issue.title,
+                description: issue.description,
+                status: issue.status,
+                priority: issue.priority,
+                severity: issue.severity,
+            });
+        }
+    }, [issue, reset]);
 
     const onSubmit = async (data: EditIssueFormData) => {
         if (!id) return;
 
-        setLoading(true);
-        setError(null);
-        setSuccessMessage(null);
-
         try {
-            await issueService.updateIssue(parseInt(id), data);
-            setSuccessMessage('Issue updated successfully!');
-
-            setTimeout(() => {
-                navigate(`/issues/${id}`);
-            }, 1500);
-        } catch (err: any) {
-            const errorMessage =
-                err.response?.data?.message || 'Failed to update issue. Please try again.';
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
+            await updateIssue(parseInt(id), data);
+        } catch (err) {
+            console.error('Update issue failed:', err);
         }
     };
 
@@ -97,7 +75,7 @@ export const EditIssuePage: React.FC = () => {
                 errors={errors}
                 loading={loading}
                 onSubmit={handleSubmit(onSubmit)}
-                onCancel={() => navigate(`/issues/${id}`)}
+                onCancel={() => navigate(-1)}
             />
         </FormLayout>
     );

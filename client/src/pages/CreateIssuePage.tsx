@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormLayout } from '../components/layout/FormLayout';
 import { createIssueSchema, type CreateIssueFormData } from '../utils/validationSchemas';
-import { issueService } from '../services/issueService';
 import { IssueForm } from '../components/issues/IssueForm';
+import { useIssueController } from '../hooks/useIssueController';
 
 export const CreateIssuePage: React.FC = () => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const { createIssue, loading, error, successMessage } = useIssueController();
 
     const {
         register,
@@ -26,23 +24,10 @@ export const CreateIssuePage: React.FC = () => {
     });
 
     const onSubmit = async (data: CreateIssueFormData) => {
-        setLoading(true);
-        setError(null);
-        setSuccessMessage(null);
-
         try {
-            await issueService.createIssue(data);
-            setSuccessMessage('Issue created successfully!');
-
-            setTimeout(() => {
-                navigate('/dashboard');
-            }, 1500);
-        } catch (err: any) {
-            const errorMessage =
-                err.response?.data?.message || 'Failed to create issue. Please try again.';
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
+            await createIssue(data, '/dashboard');
+        } catch (err) {
+            console.error('Create issue failed:', err);
         }
     };
 

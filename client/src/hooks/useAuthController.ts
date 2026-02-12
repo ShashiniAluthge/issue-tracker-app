@@ -42,7 +42,7 @@ export const useAuthController = (): AuthController => {
 
             setLoading(false);
 
-            // Redirect or any success action
+            // Redirect 
             navigate('/dashboard');
         } catch (err: any) {
             setError(err.response?.data?.message || err.message || 'Login failed');
