@@ -187,7 +187,7 @@ export const AllIssuesPage: React.FC = () => {
                 )}
             </div>
 
-            {/* Confirm Delete Dialog - MATCHING OLD WORKING VERSION */}
+            {/* Confirm Delete Dialog */}
             <ConfirmDialog
                 isOpen={deleteDialog.isOpen}
                 title="Deleting Issue"

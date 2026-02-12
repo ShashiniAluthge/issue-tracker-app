@@ -12,7 +12,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="flex h-screen overflow-hidden">
-                {/* Sidebar for Desktop */}
+
                 <div className="hidden md:flex md:shrink-0">
                     <Sidebar />
                 </div>

@@ -21,8 +21,6 @@ export const DashboardPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [statsLoading, setStatsLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
-
-    // Delete dialog state
     const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean;
         issueId: number | null;
@@ -116,7 +114,7 @@ export const DashboardPage: React.FC = () => {
     return (
         <Layout>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header - Personalized Greeting */}
+                {/* Header*/}
                 <div className="mb-6">
                     <h1 className="text-3xl font-semibold text-gray-900">
                         {getGreeting()}, {user?.name || 'User'}!

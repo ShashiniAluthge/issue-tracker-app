@@ -16,7 +16,7 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
     const [issues, setIssues] = useState<Issue[]>([]);
     const [loading, setLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
-    const [deleting, setDeleting] = useState(false); // Add deleting state
+    const [deleting, setDeleting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
 
     // Pagination & Filter State
@@ -78,14 +78,14 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
             issueId: null,
             issueTitle: '',
         });
-        setDeleting(false); // Reset deleting state
+        setDeleting(false);
     };
 
-    // Confirm delete - FIXED VERSION
+    // Confirm delete 
     const confirmDelete = async () => {
         if (!deleteDialog.issueId || deleting) return; // Prevent double deletion
 
-        setDeleting(true); // Set deleting state
+        setDeleting(true);
 
         const issueTitle = deleteDialog.issueTitle;
         const issueId = deleteDialog.issueId;
@@ -109,7 +109,7 @@ export const useAllIssues = (itemsPerPage: number = 10) => {
             console.error('Delete failed:', error);
             alert('Failed to delete issue. Please try again.');
         } finally {
-            setDeleting(false); // Reset deleting state
+            setDeleting(false);
         }
     };
 

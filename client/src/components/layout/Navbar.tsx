@@ -16,8 +16,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
     const handleLogoutClick = () => {
-        setShowUserMenu(false); // Close the dropdown
-        setShowLogoutDialog(true); // Open confirmation dialog
+        setShowUserMenu(false);
+        setShowLogoutDialog(true);
     };
 
     const handleLogoutConfirm = () => {
@@ -48,7 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                         {/* Spacer for desktop */}
                         <div className="hidden md:block"></div>
 
-                        {/* User Menu - Always on the right */}
+                        {/* User Menu */}
                         <div className="relative ml-auto">
                             <button
                                 onClick={() => setShowUserMenu(!showUserMenu)}
