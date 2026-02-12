@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
                     <div className="bg-blue-600 p-2 rounded-lg">
                         <MdBugReport className="text-white text-xl" />
                     </div>
-                    <h1 className="text-lg font-bold text-gray-900">Issue Tracker</h1>
+                    <h1 className="text-xl font-bold text-gray-900">FixFlow</h1>
                 </div>
             </div>
 
@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
                         <NavLink
                             key={item.path}
                             to={item.path}
-                            onClick={onItemClick} // closes drawer on mobile
+                            onClick={onItemClick}
                             className={({ isActive }) =>
                                 `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all ${isActive
                                     ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600'
