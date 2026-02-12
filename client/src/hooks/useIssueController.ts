@@ -42,7 +42,7 @@ export const useIssueController = (): UseIssueControllerReturn => {
     const [issues, setIssues] = useState<Issue[]>([]);
     const [stats, setStats] = useState<IssueStatus | null>(null);
     const [loading, setLoading] = useState(false);
-    const [fetchLoading, setFetchLoading] = useState(false); // ADD THIS LINE
+    const [fetchLoading, setFetchLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -106,7 +106,7 @@ export const useIssueController = (): UseIssueControllerReturn => {
 
     // Fetch Single Issue
     const fetchIssue = async (id: number): Promise<Issue> => {
-        setFetchLoading(true); // CHANGE FROM setLoading TO setFetchLoading
+        setFetchLoading(true);
         setError(null);
 
         try {
@@ -118,13 +118,13 @@ export const useIssueController = (): UseIssueControllerReturn => {
             setError(errorMessage);
             throw err;
         } finally {
-            setFetchLoading(false); // CHANGE FROM setLoading TO setFetchLoading
+            setFetchLoading(false);
         }
     };
 
     // Fetch All Issues
     const fetchIssues = async (filters?: IssueFilters) => {
-        setFetchLoading(true); // CHANGE FROM setLoading TO setFetchLoading
+        setFetchLoading(true);
         setError(null);
 
         try {
@@ -136,13 +136,13 @@ export const useIssueController = (): UseIssueControllerReturn => {
             setError(errorMessage);
             throw err;
         } finally {
-            setFetchLoading(false); // CHANGE FROM setLoading TO setFetchLoading
+            setFetchLoading(false);
         }
     };
 
     // Fetch Stats
     const fetchStats = async (): Promise<IssueStatus> => {
-        setFetchLoading(true); // CHANGE FROM setLoading TO setFetchLoading
+        setFetchLoading(true);
         setError(null);
 
         try {
@@ -154,7 +154,7 @@ export const useIssueController = (): UseIssueControllerReturn => {
             setError(errorMessage);
             throw err;
         } finally {
-            setFetchLoading(false); // CHANGE FROM setLoading TO setFetchLoading
+            setFetchLoading(false);
         }
     };
 
@@ -168,7 +168,7 @@ export const useIssueController = (): UseIssueControllerReturn => {
         issues,
         stats,
         loading,
-        fetchLoading, // ADD THIS LINE
+        fetchLoading,
         error,
         successMessage,
 

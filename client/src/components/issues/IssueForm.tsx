@@ -64,7 +64,7 @@ export const IssueForm: React.FC<IssueFormProps> = ({
 
             {/* Status, Priority, Severity */}
             <div className={`grid grid-cols-1 ${isEditMode ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-6`}>
-                {/* Status - Only in Edit Mode */}
+                {/* Status*/}
                 {isEditMode && (
                     <SelectFilter
                         label="Status"

@@ -50,7 +50,7 @@ export const createIssueSchema = z.object({
     }),
 });
 
-// Edit Issue Schema (includes status field)
+// Edit Issue Schema
 export const editIssueSchema = z.object({
     title: z
         .string()

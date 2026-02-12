@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { MdDashboard, MdBugReport } from 'react-icons/md';
 
 interface SidebarProps {
-    onItemClick?: () => void; // optional callback for mobile drawer
+    onItemClick?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {

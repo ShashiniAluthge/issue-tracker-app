@@ -41,8 +41,6 @@ export const useAuthController = (): AuthController => {
             localStorage.setItem('user', JSON.stringify(response.user));
 
             setLoading(false);
-
-            // Redirect 
             navigate('/dashboard');
         } catch (err: any) {
             setError(err.response?.data?.message || err.message || 'Login failed');
