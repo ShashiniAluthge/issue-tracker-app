@@ -6,6 +6,7 @@ import { FormLayout } from '../components/layout/FormLayout';
 import { editIssueSchema, type EditIssueFormData } from '../utils/validationSchemas';
 import { IssueForm } from '../components/issues/IssueForm';
 import { useIssueController } from '../hooks/useIssueController';
+
 export const EditIssuePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -15,6 +16,8 @@ export const EditIssuePage: React.FC = () => {
     const {
         register,
         handleSubmit,
+        watch,
+        setValue,
         formState: { errors },
         reset,
     } = useForm<EditIssueFormData>({
@@ -51,14 +54,12 @@ export const EditIssuePage: React.FC = () => {
 
     if (fetchLoading) {
         return (
-
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="animate-pulse">
                     <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
                     <div className="h-96 bg-gray-200 rounded"></div>
                 </div>
             </div>
-
         );
     }
 
@@ -72,6 +73,8 @@ export const EditIssuePage: React.FC = () => {
             <IssueForm
                 mode="edit"
                 register={register}
+                watch={watch}
+                setValue={setValue}
                 errors={errors}
                 loading={loading}
                 onSubmit={handleSubmit(onSubmit)}

@@ -17,7 +17,6 @@ export const Pagination: React.FC<PaginationProps> = ({
         const showEllipsis = totalPages > 7;
 
         if (!showEllipsis) {
-            // Show all pages if 7 or fewer
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
@@ -106,9 +105,9 @@ export const Pagination: React.FC<PaginationProps> = ({
                                 <button
                                     key={page}
                                     onClick={() => onPageChange(page as number)}
-                                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === page
-                                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                    className={`relative inline-flex items-center px-4 py-2 border cursor-pointer text-sm font-medium ${currentPage === page
+                                        ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                                         }`}
                                 >
                                     {page}
@@ -120,7 +119,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                         <button
                             onClick={() => onPageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 cursor-pointer disabled:cursor-not-allowed"
                         >
                             <span className="sr-only">Next</span>
                             <MdChevronRight className="h-5 w-5" />

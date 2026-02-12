@@ -1,4 +1,5 @@
 import React from 'react';
+import { SelectFilter } from '../common/SelectFilter';
 
 interface SearchFiltersProps {
     search: string;
@@ -52,36 +53,31 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                 </div>
 
                 {/* Status Filter */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select
-                        value={status}
-                        onChange={(e) => onStatusChange(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500  focus:outline-none cursor-pointer"
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="open">Open</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-
+                <SelectFilter
+                    label="Status"
+                    value={status}
+                    onChange={onStatusChange}
+                    options={[
+                        { label: 'All Statuses', value: '' },
+                        { label: 'Open', value: 'open' },
+                        { label: 'In Progress', value: 'in-progress' },
+                        { label: 'Resolved', value: 'resolved' },
+                        { label: 'Closed', value: 'closed' },
+                    ]}
+                />
                 {/* Priority Filter */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
-                    <select
-                        value={priority}
-                        onChange={(e) => onPriorityChange(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500  focus:outline-none cursor-pointer"
-                    >
-                        <option value="">All Priorities</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                        <option value="critical">Critical</option>
-                    </select>
-                </div>
+                <SelectFilter
+                    label="Priority"
+                    value={priority}
+                    onChange={onPriorityChange}
+                    options={[
+                        { label: 'All Priorities', value: '' },
+                        { label: 'Low', value: 'low' },
+                        { label: 'Medium', value: 'medium' },
+                        { label: 'High', value: 'high' },
+                        { label: 'Critical', value: 'critical' },
+                    ]}
+                />
             </div>
 
             {/* Clear Filters Button */}

@@ -14,6 +14,8 @@ export const CreateIssuePage: React.FC = () => {
     const {
         register,
         handleSubmit,
+        watch,
+        setValue,
         formState: { errors },
     } = useForm<CreateIssueFormData>({
         resolver: zodResolver(createIssueSchema),
@@ -41,6 +43,8 @@ export const CreateIssuePage: React.FC = () => {
             <IssueForm
                 mode="create"
                 register={register}
+                watch={watch}
+                setValue={setValue}
                 errors={errors}
                 loading={loading}
                 onSubmit={handleSubmit(onSubmit)}
