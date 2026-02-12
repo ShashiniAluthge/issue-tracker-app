@@ -12,7 +12,7 @@ export const StatusChart: React.FC<StatusChartProps> = ({ stats, loading }) => {
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+            setIsMobile(window.innerWidth < 768);
         };
 
         handleResize(); // set initial value

@@ -17,7 +17,7 @@ export const issueService = {
         return response.data;
     },
 
-    // Get issue statistics - TRANSFORM DATA HERE
+    // Get issue statistics
     getIssueStats: async (): Promise<{ success: boolean; stats: IssueStatus }> => {
         const response = await API.get('/issues/status');
 
