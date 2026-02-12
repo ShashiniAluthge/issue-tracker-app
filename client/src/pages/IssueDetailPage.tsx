@@ -7,6 +7,8 @@ import { Button } from '../components/common/Button';
 import { formatDistanceToNow } from 'date-fns';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { FaRegEdit } from 'react-icons/fa';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
+import { Alert } from '../components/common/Alert';
 
 export const IssueDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -14,7 +16,17 @@ export const IssueDetailPage: React.FC = () => {
     const [issue, setIssue] = useState<Issue | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
+    const [successMessage, setSuccessMessage] = useState('');
+    // Delete dialog state
+    const [deleteDialog, setDeleteDialog] = useState<{
+        isOpen: boolean;
+        issueId: number | null;
+        issueTitle: string;
+    }>({
+        isOpen: false,
+        issueId: null,
+        issueTitle: '',
+    });
     useEffect(() => {
         const fetchIssue = async () => {
             if (!id) return;
@@ -35,19 +47,44 @@ export const IssueDetailPage: React.FC = () => {
         fetchIssue();
     }, [id]);
 
-    const handleDelete = async () => {
-        if (!id || !window.confirm('Are you sure you want to delete this issue? This action cannot be undone.')) {
-            return;
-        }
+    const handleDelete = () => {
+        if (!issue) return;
+
+        setDeleteDialog({
+            isOpen: true,
+            issueId: issue.id,
+            issueTitle: issue.title,
+        });
+    };
+    const confirmDelete = async () => {
+        if (!deleteDialog.issueId) return;
+
+        const issueTitle = deleteDialog.issueTitle;
 
         try {
-            await issueService.deleteIssue(parseInt(id));
-            alert('Issue deleted successfully!');
-            navigate('/dashboard');
+            await issueService.deleteIssue(deleteDialog.issueId);
+
+            // Close dialog
+            setDeleteDialog({
+                isOpen: false,
+                issueId: null,
+                issueTitle: '',
+            });
+
+            setSuccessMessage(
+                `Issue "${issueTitle}" deleted successfully!`
+            );
+
+            setTimeout(() => {
+                navigate(-1);//go back
+            }, 1500);
+
         } catch (error) {
-            alert('Failed to delete issue. Please try again.');
+            console.error(error);
         }
     };
+
+
 
     const getStatusBadge = (status: string) => {
         const styles = {
@@ -250,6 +287,28 @@ export const IssueDetailPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <ConfirmDialog
+                isOpen={deleteDialog.isOpen}
+                title="Delete Issue"
+                message={`Are you sure you want to delete "${deleteDialog.issueTitle}"?`}
+                onConfirm={confirmDelete}
+                onCancel={() =>
+                    setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' })
+                }
+                type="danger"
+            />
+
+            {successMessage && (
+                <Alert
+                    type="success"
+                    message={successMessage}
+                    onClose={() => setSuccessMessage('')}
+                    isToast={true}
+                    duration={3000}
+                />
+            )}
+
+
         </div>
     );
 };

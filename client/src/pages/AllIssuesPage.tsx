@@ -8,6 +8,8 @@ import { type Issue } from '../types/issue.types';
 import { MdAdd, MdRefresh } from 'react-icons/md';
 import { Button } from '../components/common/Button';
 import { Pagination } from '../components/common/Pagination';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
+import { Alert } from '../components/common/Alert';
 
 export const AllIssuesPage: React.FC = () => {
     const navigate = useNavigate();
@@ -21,8 +23,18 @@ export const AllIssuesPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalIssues, setTotalIssues] = useState(0);
+    const [successMessage, setSuccessMessage] = useState('');
     const itemsPerPage = 10;
-
+    // Delete dialog state
+    const [deleteDialog, setDeleteDialog] = useState<{
+        isOpen: boolean;
+        issueId: number | null;
+        issueTitle: string;
+    }>({
+        isOpen: false,
+        issueId: null,
+        issueTitle: '',
+    });
     // Fetch issues with pagination and filters
     const fetchIssues = async () => {
         setLoading(true);
@@ -57,20 +69,28 @@ export const AllIssuesPage: React.FC = () => {
         navigate(`/issues/${id}/edit`);
     };
 
-    const handleDeleteIssue = async (id: number) => {
-        if (!window.confirm('Are you sure you want to delete this issue? This action cannot be undone.')) {
-            return;
-        }
+    const handleDeleteIssue = (id: number) => {
+        const issue = issues.find((i) => i.id === id);
 
-        try {
-            await issueService.deleteIssue(id);
-            // Refresh the list after deletion
-            fetchIssues();
-            alert('Issue deleted successfully!');
-        } catch (error) {
-            console.error('Error deleting issue:', error);
-            alert('Failed to delete issue. Please try again.');
-        }
+        setDeleteDialog({
+            isOpen: true,
+            issueId: id,
+            issueTitle: issue?.title || 'this issue',
+        });
+    };
+
+
+    const confirmDelete = async () => {
+        if (!deleteDialog.issueId) return;
+
+        const issueTitle = deleteDialog.issueTitle;
+
+        await issueService.deleteIssue(deleteDialog.issueId);
+        setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' });
+
+        await fetchIssues();
+
+        setSuccessMessage(`Issue "${issueTitle}" deleted successfully!`);
     };
 
     const handleClearFilters = () => {
@@ -203,6 +223,27 @@ export const AllIssuesPage: React.FC = () => {
                     </div>
                 )}
             </div>
+            {/* confirm Delete Dialog */}
+            <ConfirmDialog
+                isOpen={deleteDialog.isOpen}
+                title="Deleting Issue"
+                message={`Deleting "${deleteDialog.issueTitle}"...`}
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' })}
+                type="danger"
+                autoConfirm={true}
+            />
+
+            {/* Success Alert Toast */}
+            {successMessage && (
+                <Alert
+                    type="success"
+                    message={successMessage}
+                    onClose={() => setSuccessMessage('')}
+                    isToast={true}
+                    duration={3000}
+                />
+            )}
         </Layout>
     );
 };

@@ -10,14 +10,28 @@ import { issueService } from '../services/issueService';
 import { type Issue, type IssueStatus } from '../types/issue.types';
 import { MdAdd, MdRefresh, MdArrowForward } from 'react-icons/md';
 import { Button } from '../components/common/Button';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
+import { Alert } from '../components/common/Alert';
 
 export const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useAuthStore(); // Get user info for personalized greeting
+    const { user } = useAuthStore();
     const [stats, setStats] = useState<IssueStatus | null>(null);
     const [recentIssues, setRecentIssues] = useState<Issue[]>([]);
     const [loading, setLoading] = useState(true);
     const [statsLoading, setStatsLoading] = useState(true);
+    const [successMessage, setSuccessMessage] = useState('');
+
+    // Delete dialog state
+    const [deleteDialog, setDeleteDialog] = useState<{
+        isOpen: boolean;
+        issueId: number | null;
+        issueTitle: string;
+    }>({
+        isOpen: false,
+        issueId: null,
+        issueTitle: '',
+    });
 
     // Get greeting based on time of day
     const getGreeting = () => {
@@ -69,15 +83,29 @@ export const DashboardPage: React.FC = () => {
         navigate(`/issues/${id}/edit`);
     };
 
-    const handleDeleteIssue = async (id: number) => {
-        try {
-            await issueService.deleteIssue(id);
-            fetchStats();
-            fetchRecentIssues();
-        } catch (error) {
-            console.error('Error deleting issue:', error);
-            alert('Failed to delete issue. Please try again.');
-        }
+
+    const handleDeleteIssue = (id: number) => {
+        const issue = recentIssues.find(i => i.id === id);
+        setDeleteDialog({
+            isOpen: true,
+            issueId: id,
+            issueTitle: issue?.title || 'this issue',
+        });
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteDialog.issueId) return;
+
+        const issueTitle = deleteDialog.issueTitle;
+
+        await issueService.deleteIssue(deleteDialog.issueId);
+        setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' });
+
+        await fetchStats();
+        await fetchRecentIssues();
+
+        // Show success message
+        setSuccessMessage(`Issue "${issueTitle}" deleted successfully!`);
     };
 
     const handleRefresh = () => {
@@ -93,13 +121,12 @@ export const DashboardPage: React.FC = () => {
                     <h1 className="text-3xl font-semibold text-gray-900">
                         {getGreeting()}, {user?.name || 'User'}!
                     </h1>
-
                 </div>
 
                 {/* Statistics Cards */}
                 <StatusCards status={stats} loading={statsLoading} />
 
-                {/* Status Chart*/}
+                {/* Status Chart and Quick Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
                     <div className="lg:col-span-3">
                         <StatusChart stats={stats} loading={statsLoading} />
@@ -107,7 +134,7 @@ export const DashboardPage: React.FC = () => {
                     <QuickStats stats={stats} loading={statsLoading} />
                 </div>
 
-                {/* Recent Issues Section*/}
+                {/* Recent Issues Section Header */}
                 <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                     <div>
                         <h2 className="text-xl font-semibold text-gray-900">Recent Issues</h2>
@@ -128,7 +155,7 @@ export const DashboardPage: React.FC = () => {
                             onClick={() => navigate('/issues/create')}
                             variant="primary"
                             size="sm"
-                            className='cursor-pointer'
+                            className="cursor-pointer"
                         >
                             <MdAdd className="mr-1.5 text-base" />
                             New Issue
@@ -154,7 +181,7 @@ export const DashboardPage: React.FC = () => {
                     onDeleteIssue={handleDeleteIssue}
                 />
 
-                {/*view all issues action */}
+                {/* View All Issues Action */}
                 {!loading && recentIssues.length === 10 && (
                     <div className="mt-6 text-center">
                         <Button
@@ -172,6 +199,28 @@ export const DashboardPage: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* confirm Delete Dialog */}
+            <ConfirmDialog
+                isOpen={deleteDialog.isOpen}
+                title="Deleting Issue"
+                message={`Deleting "${deleteDialog.issueTitle}"...`}
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteDialog({ isOpen: false, issueId: null, issueTitle: '' })}
+                type="danger"
+                autoConfirm={true}
+            />
+
+            {/* Success Alert Toast */}
+            {successMessage && (
+                <Alert
+                    type="success"
+                    message={successMessage}
+                    onClose={() => setSuccessMessage('')}
+                    isToast={true}
+                    duration={3000}
+                />
+            )}
         </Layout>
     );
 };
